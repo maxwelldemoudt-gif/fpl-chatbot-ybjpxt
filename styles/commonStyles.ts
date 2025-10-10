@@ -1,24 +1,44 @@
+
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
-export const colors = {
-  primary: '#162456',    // Material Blue
-  secondary: '#193cb8',  // Darker Blue
-  accent: '#64B5F6',     // Light Blue
-  background: '#101824',  // Keeping dark background
-  backgroundAlt: '#162133',  // Keeping dark background
-  text: '#e3e3e3',       // Keeping light text
-  grey: '#90CAF9',       // Light Blue Grey
-  card: '#193cb8',       // Keeping dark card background
+export const lightColors = {
+  background: '#F5F5F5',
+  backgroundAlt: '#FFFFFF',
+  text: '#212121',
+  textSecondary: '#757575',
+  primary: '#03A9F4',
+  secondary: '#FFC107',
+  accent: '#7C4DFF',
+  card: '#FFFFFF',
+  highlight: '#64B5F6',
+  border: '#E0E0E0',
+  shadow: 'rgba(0, 0, 0, 0.1)',
 };
+
+export const darkColors = {
+  background: '#121212',
+  backgroundAlt: '#1E1E1E',
+  text: '#FFFFFF',
+  textSecondary: '#B0B0B0',
+  primary: '#03A9F4',
+  secondary: '#FFC107',
+  accent: '#7C4DFF',
+  card: '#1E1E1E',
+  highlight: '#64B5F6',
+  border: '#333333',
+  shadow: 'rgba(0, 0, 0, 0.3)',
+};
+
+export const getColors = (isDark: boolean) => isDark ? darkColors : lightColors;
 
 export const buttonStyles = StyleSheet.create({
   instructionsButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: lightColors.primary,
     alignSelf: 'center',
     width: '100%',
   },
   backButton: {
-    backgroundColor: colors.backgroundAlt,
+    backgroundColor: lightColors.backgroundAlt,
     alignSelf: 'center',
     width: '100%',
   },
@@ -26,13 +46,13 @@ export const buttonStyles = StyleSheet.create({
 
 export const commonStyles = StyleSheet.create({
   wrapper: {
-    backgroundColor: colors.background,
+    backgroundColor: lightColors.background,
     width: '100%',
     height: '100%',
   },
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: lightColors.background,
     width: '100%',
     height: '100%',
     justifyContent: 'center',
@@ -49,13 +69,13 @@ export const commonStyles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '800',
     textAlign: 'center',
-    color: colors.text,
+    color: lightColors.text,
     marginBottom: 10
   },
   text: {
     fontSize: 16,
     fontWeight: '500',
-    color: colors.text,
+    color: lightColors.text,
     marginBottom: 8,
     lineHeight: 24,
     textAlign: 'center',
@@ -71,14 +91,14 @@ export const commonStyles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   card: {
-    backgroundColor: colors.backgroundAlt,
-    borderColor: colors.grey,
+    backgroundColor: lightColors.backgroundAlt,
+    borderColor: lightColors.border,
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
     marginVertical: 8,
     width: '100%',
-    boxShadow: '0px 2px 3px rgba(0, 0, 0, 0.1)',
+    boxShadow: `0px 2px 3px ${lightColors.shadow}`,
     elevation: 2,
   },
   icon: {
