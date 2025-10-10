@@ -1,11 +1,13 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
 import { IconSymbol } from '@/components/IconSymbol';
 import { useAppTheme } from '@/contexts/ThemeContext';
+import * as ImagePicker from 'expo-image-picker';
+import { ImagePickerResult } from '@/types/chat';
 
 interface ChatInputProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, image?: ImagePickerResult) => void;
   disabled?: boolean;
 }
 
@@ -20,9 +22,66 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled })
     }
   };
 
+  const handleImagePicker = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required',
+          'Please grant camera roll permissions to upload team images.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [16, 9],
+        quality: 0.8,
+        exif: false,
+      });
+
+      console.log('Image picker result:', result);
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const asset = result.assets[0];
+        const imageData: ImagePickerResult = {
+          uri: asset.uri,
+          width: asset.width,
+          height: asset.height,
+          fileSize: asset.fileSize,
+          fileName: asset.fileName || 'team-image.jpg',
+        };
+
+        // Send image with a default message
+        const imageMessage = message.trim() || 'Please analyze my FPL team and provide suggestions for improvement.';
+        onSendMessage(imageMessage, imageData);
+        setMessage('');
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert(
+        'Error',
+        'Failed to pick image. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <TouchableOpacity
+          style={[styles.imageButton, { backgroundColor: colors.primary }]}
+          onPress={handleImagePicker}
+          disabled={disabled}
+        >
+          <IconSymbol name="photo" size={20} color="#FFFFFF" />
+        </TouchableOpacity>
+        
         <TextInput
           style={[styles.textInput, { color: colors.text }]}
           placeholder="Ask about your FPL team..."
@@ -35,6 +94,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled })
           onSubmitEditing={handleSend}
           returnKeyType="send"
         />
+        
         <TouchableOpacity
           style={[
             styles.sendButton,
@@ -67,6 +127,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     minHeight: 48,
+  },
+  imageButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
   },
   textInput: {
     flex: 1,

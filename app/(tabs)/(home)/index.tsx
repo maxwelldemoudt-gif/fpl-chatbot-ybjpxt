@@ -1,14 +1,14 @@
 
-import React from "react";
-import { View, FlatList, StyleSheet, Platform } from "react-native";
-import { Stack } from "expo-router";
+import React from 'react';
+import { View, FlatList, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Stack } from "expo-router";
+import { ChatMessage as ChatMessageType } from "@/types/chat";
 import { useAppTheme } from "@/contexts/ThemeContext";
 import { useFPLChatbot } from "@/hooks/useFPLChatbot";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { TypingIndicator } from "@/components/TypingIndicator";
-import { ChatMessage as ChatMessageType } from "@/types/chat";
 
 export default function HomeScreen() {
   const { colors } = useAppTheme();
@@ -24,38 +24,32 @@ export default function HomeScreen() {
   };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+      <Stack.Screen 
+        options={{ 
           title: "FPL Assistant",
-          headerStyle: {
-            backgroundColor: colors.card,
-          },
+          headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
-          headerTitleStyle: {
-            fontWeight: '600',
-          },
-        }}
+          headerShadowVisible: false,
+        }} 
       />
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['bottom']}>
-        <FlatList
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={[
-            styles.messagesList,
-            Platform.OS !== 'ios' && styles.messagesListWithTabBar
-          ]}
-          showsVerticalScrollIndicator={false}
-          ListFooterComponent={renderFooter}
-          inverted={false}
-          onContentSizeChange={() => {
-            // Auto-scroll to bottom when new messages arrive
-          }}
-        />
-        <ChatInput onSendMessage={sendMessage} disabled={isTyping} />
-      </SafeAreaView>
-    </>
+      
+      <FlatList
+        data={messages}
+        renderItem={renderMessage}
+        keyExtractor={(item) => item.id}
+        style={styles.messagesList}
+        contentContainerStyle={styles.messagesContent}
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={renderFooter}
+        keyboardShouldPersistTaps="handled"
+      />
+      
+      <ChatInput 
+        onSendMessage={sendMessage}
+        disabled={isTyping}
+      />
+    </SafeAreaView>
   );
 }
 
@@ -64,10 +58,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   messagesList: {
-    paddingVertical: 16,
-    flexGrow: 1,
+    flex: 1,
   },
-  messagesListWithTabBar: {
-    paddingBottom: 100, // Extra padding for floating tab bar
+  messagesContent: {
+    paddingVertical: 16,
+    paddingBottom: Platform.OS === 'ios' ? 0 : 16,
   },
 });

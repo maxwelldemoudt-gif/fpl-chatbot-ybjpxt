@@ -5,6 +5,15 @@ export interface ChatMessage {
   isUser: boolean;
   timestamp: Date;
   isTyping?: boolean;
+  image?: {
+    uri: string;
+    width?: number;
+    height?: number;
+  };
+  imageAnalysis?: {
+    isAnalyzing: boolean;
+    analysisComplete: boolean;
+  };
 }
 
 export interface FPLPlayer {
@@ -24,4 +33,12 @@ export interface FPLTeam {
   totalPoints: number;
   teamValue: number;
   bank: number;
+}
+
+export interface ImagePickerResult {
+  uri: string;
+  width?: number;
+  height?: number;
+  fileSize?: number;
+  fileName?: string;
 }

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { ChatMessage as ChatMessageType } from '@/types/chat';
 import { useAppTheme } from '@/contexts/ThemeContext';
 
@@ -11,28 +11,55 @@ interface ChatMessageProps {
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const { colors } = useAppTheme();
 
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   return (
     <View style={[
       styles.container,
-      message.isUser ? styles.userContainer : styles.botContainer
+      message.isUser ? styles.userMessage : styles.botMessage
     ]}>
       <View style={[
         styles.bubble,
-        message.isUser 
-          ? [styles.userBubble, { backgroundColor: colors.primary }]
-          : [styles.botBubble, { backgroundColor: colors.card, borderColor: colors.border }]
+        {
+          backgroundColor: message.isUser ? colors.primary : colors.card,
+          borderColor: colors.border,
+        }
       ]}>
+        {message.image && (
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: message.image.uri }}
+              style={[
+                styles.messageImage,
+                { borderColor: colors.border }
+              ]}
+              resizeMode="cover"
+            />
+            {message.imageAnalysis?.isAnalyzing && (
+              <View style={[styles.analysisOverlay, { backgroundColor: colors.background + '90' }]}>
+                <ActivityIndicator size="small" color={colors.primary} />
+                <Text style={[styles.analysisText, { color: colors.text }]}>
+                  Analyzing team...
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+        
         <Text style={[
           styles.messageText,
           { color: message.isUser ? '#FFFFFF' : colors.text }
         ]}>
           {message.text}
         </Text>
+        
         <Text style={[
           styles.timestamp,
-          { color: message.isUser ? 'rgba(255,255,255,0.7)' : colors.textSecondary }
+          { color: message.isUser ? '#FFFFFF80' : colors.textSecondary }
         ]}>
-          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {formatTime(message.timestamp)}
         </Text>
       </View>
     </View>
@@ -44,23 +71,44 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     paddingHorizontal: 16,
   },
-  userContainer: {
+  userMessage: {
     alignItems: 'flex-end',
   },
-  botContainer: {
+  botMessage: {
     alignItems: 'flex-start',
   },
   bubble: {
     maxWidth: '80%',
-    padding: 12,
     borderRadius: 18,
-  },
-  userBubble: {
-    borderBottomRightRadius: 4,
-  },
-  botBubble: {
-    borderBottomLeftRadius: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderWidth: 1,
+  },
+  imageContainer: {
+    position: 'relative',
+    marginBottom: 8,
+  },
+  messageImage: {
+    width: 200,
+    height: 120,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  analysisOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  analysisText: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: '500',
   },
   messageText: {
     fontSize: 16,
