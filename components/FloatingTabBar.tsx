@@ -67,15 +67,18 @@ export default function FloatingTabBar({
 
   const animatedStyle = useAnimatedStyle(() => {
     const tabWidth = containerWidth / tabs.length;
+    const indicatorWidth = 60; // Fixed width for the indicator
+    const indicatorOffset = (tabWidth - indicatorWidth) / 2; // Center the indicator within each tab
+    
     const translateX = interpolate(
       activeIndex.value,
       [0, tabs.length - 1],
-      [0, tabWidth * (tabs.length - 1)]
+      [indicatorOffset, (tabWidth * (tabs.length - 1)) + indicatorOffset]
     );
 
     return {
       transform: [{ translateX }],
-      width: tabWidth,
+      width: indicatorWidth,
     };
   });
 
