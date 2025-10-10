@@ -97,17 +97,6 @@ export default function FloatingTabBar({
           intensity={80}
           tint={theme.dark ? 'dark' : 'light'}
         >
-          <Animated.View
-            style={[
-              styles.activeIndicator,
-              {
-                backgroundColor: colors.primary,
-                borderRadius: borderRadius - 4,
-              },
-              animatedStyle,
-            ]}
-          />
-          
           {tabs.map((tab, index) => {
             const isActive = pathname === '/' ? tab.route === '/(home)' : pathname.includes(tab.name);
             
@@ -137,6 +126,17 @@ export default function FloatingTabBar({
               </TouchableOpacity>
             );
           })}
+          
+          <Animated.View
+            style={[
+              styles.activeIndicator,
+              {
+                backgroundColor: colors.primary,
+                borderRadius: borderRadius - 4,
+              },
+              animatedStyle,
+            ]}
+          />
         </BlurView>
       </View>
     </SafeAreaView>
@@ -175,6 +175,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: 52,
     margin: 4,
+    zIndex: 10,
+    elevation: 10,
   },
   tab: {
     flex: 1,
@@ -182,6 +184,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 8,
     gap: 2,
+    zIndex: 1,
   },
   tabLabel: {
     fontSize: 12,
