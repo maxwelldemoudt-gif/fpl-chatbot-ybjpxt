@@ -45,7 +45,6 @@ export default function FloatingTabBar({
   const theme = useTheme();
   const { colors } = useAppTheme();
   const activeIndex = useSharedValue(0);
-  const [tabLayouts, setTabLayouts] = React.useState<{ x: number; width: number }[]>([]);
 
   // Update active index based on current route
   React.useEffect(() => {
@@ -71,14 +70,13 @@ export default function FloatingTabBar({
   const animatedStyle = useAnimatedStyle(() => {
     const tabWidth = containerWidth / tabs.length;
     
-    // Calculate the indicator width based on content
-    // Making it slightly wider to encompass icon + text
-    const indicatorWidth = tabWidth * 0.7; // 70% of tab width for better centering
+    // Calculate the indicator width - slightly smaller for better visual balance
+    const indicatorWidth = tabWidth * 0.75;
     
-    // Calculate centered position for each tab
-    const indicatorOffset = (tabWidth - indicatorWidth) / 2;
-    
-    const translateX = (activeIndex.value * tabWidth) + indicatorOffset;
+    // Calculate the centered position
+    // Start position of the tab + half the tab width - half the indicator width
+    const centerOffset = (tabWidth - indicatorWidth) / 2;
+    const translateX = (activeIndex.value * tabWidth) + centerOffset;
 
     return {
       transform: [{ translateX }],
