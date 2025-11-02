@@ -73,15 +73,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled })
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Circular Upload Button - Bottom Left */}
+      <TouchableOpacity
+        style={[styles.uploadButton, { backgroundColor: colors.primary }]}
+        onPress={handleImagePicker}
+        disabled={disabled}
+        activeOpacity={0.8}
+      >
+        <IconSymbol name="plus" size={28} color="#FFFFFF" />
+      </TouchableOpacity>
+
       <View style={[styles.inputContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <TouchableOpacity
-          style={[styles.imageButton, { backgroundColor: colors.primary }]}
-          onPress={handleImagePicker}
-          disabled={disabled}
-        >
-          <IconSymbol name="photo" size={20} color="#FFFFFF" />
-        </TouchableOpacity>
-        
         <TextInput
           style={[styles.textInput, { color: colors.text }]}
           placeholder="Ask about your FPL team..."
@@ -118,8 +120,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     paddingBottom: Platform.OS === 'ios' ? 34 : 12,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 12,
+  },
+  uploadButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   inputContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-end',
     borderRadius: 24,
@@ -127,14 +151,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     minHeight: 48,
-  },
-  imageButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
   },
   textInput: {
     flex: 1,

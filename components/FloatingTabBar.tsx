@@ -8,7 +8,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  interpolate,
 } from 'react-native-reanimated';
 import {
   View,
@@ -46,6 +45,7 @@ export default function FloatingTabBar({
   const theme = useTheme();
   const { colors } = useAppTheme();
   const activeIndex = useSharedValue(0);
+  const [tabLayouts, setTabLayouts] = React.useState<{ x: number; width: number }[]>([]);
 
   // Update active index based on current route
   React.useEffect(() => {
@@ -56,7 +56,10 @@ export default function FloatingTabBar({
       return pathname.includes(tab.name);
     });
     if (currentIndex !== -1) {
-      activeIndex.value = withSpring(currentIndex);
+      activeIndex.value = withSpring(currentIndex, {
+        damping: 20,
+        stiffness: 90,
+      });
     }
   }, [pathname, tabs]);
 
@@ -67,14 +70,15 @@ export default function FloatingTabBar({
 
   const animatedStyle = useAnimatedStyle(() => {
     const tabWidth = containerWidth / tabs.length;
-    const indicatorWidth = 60; // Fixed width for the indicator
-    const indicatorOffset = (tabWidth - indicatorWidth) / 2; // Center the indicator within each tab
     
-    const translateX = interpolate(
-      activeIndex.value,
-      [0, tabs.length - 1],
-      [indicatorOffset, (tabWidth * (tabs.length - 1)) + indicatorOffset]
-    );
+    // Calculate the indicator width based on content
+    // Making it slightly wider to encompass icon + text
+    const indicatorWidth = tabWidth * 0.7; // 70% of tab width for better centering
+    
+    // Calculate centered position for each tab
+    const indicatorOffset = (tabWidth - indicatorWidth) / 2;
+    
+    const translateX = (activeIndex.value * tabWidth) + indicatorOffset;
 
     return {
       transform: [{ translateX }],
@@ -97,6 +101,17 @@ export default function FloatingTabBar({
           intensity={80}
           tint={theme.dark ? 'dark' : 'light'}
         >
+          <Animated.View
+            style={[
+              styles.activeIndicator,
+              {
+                backgroundColor: colors.primary,
+                borderRadius: borderRadius - 4,
+              },
+              animatedStyle,
+            ]}
+          />
+          
           {tabs.map((tab, index) => {
             const isActive = pathname === '/' ? tab.route === '/(home)' : pathname.includes(tab.name);
             
@@ -126,17 +141,6 @@ export default function FloatingTabBar({
               </TouchableOpacity>
             );
           })}
-          
-          <Animated.View
-            style={[
-              styles.activeIndicator,
-              {
-                backgroundColor: colors.primary,
-                borderRadius: borderRadius - 4,
-              },
-              animatedStyle,
-            ]}
-          />
         </BlurView>
       </View>
     </SafeAreaView>
@@ -159,6 +163,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 4,
     borderWidth: Platform.OS === 'ios' ? 0 : 1,
+    position: 'relative',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -175,8 +180,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: 52,
     margin: 4,
-    zIndex: 10,
-    elevation: 10,
+    zIndex: 0,
   },
   tab: {
     flex: 1,
