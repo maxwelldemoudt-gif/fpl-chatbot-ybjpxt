@@ -4,11 +4,6 @@ import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@react-navigation/native';
 import { useAppTheme } from '@/contexts/ThemeContext';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
 import {
   View,
   Text,
@@ -44,45 +39,11 @@ export default function FloatingTabBar({
   const pathname = usePathname();
   const theme = useTheme();
   const { colors } = useAppTheme();
-  const activeIndex = useSharedValue(0);
-
-  // Update active index based on current route
-  React.useEffect(() => {
-    const currentIndex = tabs.findIndex(tab => {
-      if (tab.route === '/(home)') {
-        return pathname === '/' || pathname.startsWith('/(tabs)/(home)');
-      }
-      return pathname.includes(tab.name);
-    });
-    if (currentIndex !== -1) {
-      activeIndex.value = withSpring(currentIndex, {
-        damping: 20,
-        stiffness: 90,
-      });
-    }
-  }, [pathname, tabs]);
 
   const handleTabPress = (route: string) => {
     console.log('Tab pressed:', route);
     router.push(route as any);
   };
-
-  const animatedStyle = useAnimatedStyle(() => {
-    const tabWidth = containerWidth / tabs.length;
-    
-    // Calculate the indicator width - slightly smaller for better visual balance
-    const indicatorWidth = tabWidth * 0.75;
-    
-    // Calculate the centered position
-    // Start position of the tab + half the tab width - half the indicator width
-    const centerOffset = (tabWidth - indicatorWidth) / 2;
-    const translateX = (activeIndex.value * tabWidth) + centerOffset;
-
-    return {
-      transform: [{ translateX }],
-      width: indicatorWidth,
-    };
-  });
 
   return (
     <SafeAreaView style={[styles.safeArea, { bottom: bottomMargin }]} edges={['bottom']}>
@@ -99,17 +60,6 @@ export default function FloatingTabBar({
           intensity={80}
           tint={theme.dark ? 'dark' : 'light'}
         >
-          <Animated.View
-            style={[
-              styles.activeIndicator,
-              {
-                backgroundColor: colors.primary,
-                borderRadius: borderRadius - 4,
-              },
-              animatedStyle,
-            ]}
-          />
-          
           {tabs.map((tab, index) => {
             const isActive = pathname === '/' ? tab.route === '/(home)' : pathname.includes(tab.name);
             
@@ -123,13 +73,13 @@ export default function FloatingTabBar({
                 <IconSymbol
                   name={tab.icon as any}
                   size={24}
-                  color={isActive ? '#FFFFFF' : colors.text}
+                  color={isActive ? colors.primary : colors.text}
                 />
                 <Text
                   style={[
                     styles.tabLabel,
                     {
-                      color: isActive ? '#FFFFFF' : colors.text,
+                      color: isActive ? colors.primary : colors.text,
                       opacity: isActive ? 1 : 0.7,
                     },
                   ]}
@@ -174,19 +124,12 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  activeIndicator: {
-    position: 'absolute',
-    height: 52,
-    margin: 4,
-    zIndex: 0,
-  },
   tab: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 8,
     gap: 2,
-    zIndex: 1,
   },
   tabLabel: {
     fontSize: 12,
