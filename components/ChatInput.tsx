@@ -121,6 +121,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled })
   );
 };
 
+export default ChatInput;
+
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
