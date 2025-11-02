@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Platform, Alert, Keyboard } from 'react-native';
 import { IconSymbol } from '@/components/IconSymbol';
 import { useAppTheme } from '@/contexts/ThemeContext';
 import * as ImagePicker from 'expo-image-picker';
@@ -16,9 +16,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled })
   const { colors } = useAppTheme();
 
   const handleSend = () => {
-    if (message.trim() && !disabled) {
-      onSendMessage(message);
+    const trimmedMessage = message.trim();
+    if (trimmedMessage && !disabled) {
+      console.log('Sending message:', trimmedMessage);
+      onSendMessage(trimmedMessage);
       setMessage('');
+      Keyboard.dismiss();
     }
   };
 
@@ -60,6 +63,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled })
         const imageMessage = message.trim() || 'Please analyze my FPL team and provide suggestions for improvement.';
         onSendMessage(imageMessage, imageData);
         setMessage('');
+        Keyboard.dismiss();
       }
     } catch (error) {
       console.error('Error picking image:', error);
@@ -95,6 +99,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled })
           editable={!disabled}
           onSubmitEditing={handleSend}
           returnKeyType="send"
+          blurOnSubmit={false}
         />
         
         <TouchableOpacity
@@ -107,6 +112,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, disabled })
           ]}
           onPress={handleSend}
           disabled={!message.trim() || disabled}
+          activeOpacity={0.7}
         >
           <IconSymbol name="arrow.up" size={20} color="#FFFFFF" />
         </TouchableOpacity>

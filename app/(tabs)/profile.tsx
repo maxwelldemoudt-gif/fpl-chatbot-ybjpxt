@@ -6,10 +6,12 @@ import { IconSymbol } from "@/components/IconSymbol";
 import { GlassView } from "expo-glass-effect";
 import { useTheme } from "@react-navigation/native";
 import { useAppTheme } from "@/contexts/ThemeContext";
+import { Stack, useRouter } from "expo-router";
 
 export default function ProfileScreen() {
   const theme = useTheme();
   const { colors, themeMode, setThemeMode, isDark } = useAppTheme();
+  const router = useRouter();
 
   const handleThemeChange = (mode: 'light' | 'dark' | 'system') => {
     console.log('Changing theme to:', mode);
@@ -18,6 +20,25 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top']}>
+      <Stack.Screen 
+        options={{ 
+          headerShown: false,
+        }} 
+      />
+      
+      {/* Custom Header */}
+      <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+        >
+          <IconSymbol name="chevron.left" size={24} color={colors.primary} />
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Settings</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+      
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
@@ -135,6 +156,24 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  backButton: {
+    padding: 4,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  headerSpacer: {
+    width: 32,
   },
   container: {
     flex: 1,
