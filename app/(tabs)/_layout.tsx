@@ -1,6 +1,5 @@
 
-import FloatingTabBar, { TabBarItem } from '@/components/FloatingTabBar';
-import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs, Icon } from 'expo-router/unstable-native-tabs';
 import { Stack } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -9,21 +8,7 @@ import { useAppTheme } from '@/contexts/ThemeContext';
 export default function TabLayout() {
   const { colors } = useAppTheme();
 
-  const tabs: TabBarItem[] = [
-    {
-      name: '(home)',
-      title: 'Chat',
-      icon: 'message.fill',
-      route: '/(home)',
-    },
-    {
-      name: 'profile',
-      title: 'Profile',
-      icon: 'person.fill',
-      route: '/profile',
-    },
-  ];
-
+  // On iOS, use native tabs
   if (Platform.OS === 'ios') {
     return (
       <NativeTabs>
@@ -49,13 +34,11 @@ export default function TabLayout() {
     );
   }
 
+  // On Android and Web, use Stack without bottom tabs
   return (
-    <>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(home)" />
-        <Stack.Screen name="profile" />
-      </Stack>
-      <FloatingTabBar tabs={tabs} />
-    </>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(home)" />
+      <Stack.Screen name="profile" />
+    </Stack>
   );
 }
